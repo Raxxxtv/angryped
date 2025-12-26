@@ -1,7 +1,7 @@
 ESX = exports["es_extended"]:getSharedObject()
 
 local spawnedPeds = {}
-local cooldown = false
+local cooldown = {}
 
 local function GetPlayer(source)
 	local xPlayer = ESX.GetPlayerFromId(source)
@@ -21,15 +21,18 @@ local function RewardPlayer(source)
 end
 
 RegisterNetEvent("angryped:requestSpawn", function()
-    if cooldown then return end
-    cooldown = true
+    if cooldown[source] then return end
+    cooldown[source] = true
     local src = source
     local xPlayer = GetPlayer(src)
 
     local coords = GetEntityCoords(GetPlayerPed(src))
 
     local npc = CreatePed(4, Config.pedModel, coords.x + 2.0, coords.y, coords.z, 0.0, true, true)
-    if not npc then return end
+    if not npc then
+        cooldown[source] = false
+        return
+    end
 
     local netId = NetworkGetNetworkIdFromEntity(npc)
     spawnedPeds[netId] = {
@@ -49,7 +52,7 @@ RegisterNetEvent("angryped:pedDied", function(netId)
 
     if not pedData then return end
     if not pedData.alive then return end
-    cooldown = false
+    cooldown[source] = false
 
     pedData.alive = false
 
