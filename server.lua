@@ -37,7 +37,8 @@ RegisterNetEvent("angryped:requestSpawn", function()
     local netId = NetworkGetNetworkIdFromEntity(npc)
     spawnedPeds[netId] = {
         alive = true,
-        rewarded = false
+        rewarded = false,
+        owner = src
     }
 
     GiveWeaponToPed(npc, `WEAPON_UNARMED`, 1, false, true)
@@ -52,13 +53,15 @@ RegisterNetEvent("angryped:pedDied", function(netId)
 
     if not pedData then return end
     if not pedData.alive then return end
-    cooldown[source] = false
+    local owner = pedData.owner
+    if owner ~= src then return end
+    cooldown[owner] = false
 
     pedData.alive = false
 
     if not pedData.rewarded then
         pedData.rewarded = true
-        RewardPlayer(src)
+        RewardPlayer(owner)
     end
 
     spawnedPeds[netId] = nil
