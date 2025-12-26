@@ -1,6 +1,7 @@
 ESX = exports["es_extended"]:getSharedObject()
 
 local spawnedPeds = {}
+local cooldown = false
 
 local function GetPlayer(source)
 	local xPlayer = ESX.GetPlayerFromId(source)
@@ -20,6 +21,8 @@ local function RewardPlayer(source)
 end
 
 RegisterNetEvent("angryped:requestSpawn", function()
+    if cooldown then return end
+    cooldown = true
     local src = source
     local xPlayer = GetPlayer(src)
 
@@ -46,6 +49,7 @@ RegisterNetEvent("angryped:pedDied", function(netId)
 
     if not pedData then return end
     if not pedData.alive then return end
+    cooldown = false
 
     pedData.alive = false
 
