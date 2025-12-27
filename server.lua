@@ -23,8 +23,9 @@ RegisterNetEvent("angryped:requestSpawn", function()
     if cooldown[source] then return end
     cooldown[source] = true
     local src = source
+    local ped = GetPlayerPed(src)
 
-    local coords = GetEntityCoords(GetPlayerPed(src))
+    local coords = GetEntityCoords(ped)
 
     local npc = CreatePed(4, Config.pedModel, coords.x, coords.y, coords.z, 0.0, true, true)
     if not npc then
@@ -37,7 +38,7 @@ RegisterNetEvent("angryped:requestSpawn", function()
 	Entity(npc).state:set("rewarded", false, true)
 
     GiveWeaponToPed(npc, `WEAPON_UNARMED`, 1, false, true)
-    TaskCombatPed(npc, GetPlayerPed(src), 0, 16)
+    TaskCombatPed(npc, ped, 0, 16)
 end)
 
 RegisterNetEvent("angryped:validateKill", function(netId)
