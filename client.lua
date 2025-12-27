@@ -23,19 +23,33 @@ AddEventHandler("mg_lib:reload", function()
 	CreateAngryPedMarker()
 end)
 
-AddStateBagChangeHandler("ped_alive", nil, function(bagName, key, value)
+CreateThread(function()
+    CreateAngryPedMarker()
+end)
+
+AddStateBagChangeHandler("ped", nil, function(bagName, key, value)
     if value ~= true then return end
     local npc = GetEntityFromStateBagName(bagName)
+
     CreateThread(function()
+        local timeout = 0
         while not DoesEntityExist(npc) do
             Wait(50)
         end
+        while not NetworkHasControlOfEntity(npc) and timeout < 50 do
+            Wait(50)
+            timeout = timeout + 1
+            NetworkRequestControlOfEntity(npc)
+        end
+
+        local coords = GetEntityCoords(npc)
+        SetEntityCoordsNoOffset(npc, coords.x, coords.y + 5, coords.z, false, false, false)
 
         while DoesEntityExist(npc) and not IsEntityDead(npc) do
             Wait(300)
         end
-
-        Entity(npc).state:set("ped_alive", false, true)
+        local netId = NetworkGetNetworkIdFromEntity(npc)
+        TriggerServerEvent("angryped:validateKill", netId)
 
 		Wait(5000)
 
@@ -45,4 +59,3 @@ AddStateBagChangeHandler("ped_alive", nil, function(bagName, key, value)
     end)
 
 end)
-
