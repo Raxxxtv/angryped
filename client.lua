@@ -23,20 +23,19 @@ AddEventHandler("mg_lib:reload", function()
 	CreateAngryPedMarker()
 end)
 
-RegisterNetEvent("angryped:syncPed", function(netId)
+AddStateBagChangeHandler("ped_alive", nil, function(bagName, key, value)
+    if value ~= true then return end
+    local npc = GetEntityFromStateBagName(bagName)
     CreateThread(function()
-        local npc = NetworkGetEntityFromNetworkId(netId)
-
         while not DoesEntityExist(npc) do
             Wait(50)
-            npc = NetworkGetEntityFromNetworkId(netId)
         end
 
         while DoesEntityExist(npc) and not IsEntityDead(npc) do
             Wait(300)
         end
 
-        TriggerServerEvent("angryped:pedDied", netId)
+        Entity(npc).state:set("ped_alive", false, true)
 
 		Wait(5000)
 
@@ -44,5 +43,6 @@ RegisterNetEvent("angryped:syncPed", function(netId)
             DeleteEntity(npc)
         end
     end)
+
 end)
 
