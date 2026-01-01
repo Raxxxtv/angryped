@@ -34,7 +34,7 @@ AddStateBagChangeHandler("ped", nil, function(bagName, key, value)
     CreateThread(function()
         local timeout = 0
 
-        while not NetworkHasControlOfEntity(npc) and timeout < 50 do
+        while not NetworkHasControlOfEntity(npc) and timeout < 10 do
             Wait(50)
             timeout = timeout + 1
             NetworkRequestControlOfEntity(npc)
@@ -43,9 +43,10 @@ AddStateBagChangeHandler("ped", nil, function(bagName, key, value)
         local coords = GetEntityCoords(npc)
         SetEntityCoordsNoOffset(npc, coords.x, coords.y + 5, coords.z, false, false, false)
 
-        while DoesEntityExist(npc) and not IsEntityDead(npc) do
+        while not IsEntityDead(npc) do
             Wait(300)
         end
+        if not DoesEntityExist(npc) then return end
         local netId = NetworkGetNetworkIdFromEntity(npc)
         TriggerServerEvent("angryped:validateKill", netId)
     end)
