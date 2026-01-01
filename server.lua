@@ -52,6 +52,8 @@ RegisterNetEvent("angryped:validateKill", function(netId)
         pedData.rewarded = true
         RewardPlayer(owner)
     end
+    Wait(5000)
+    DeleteEntity(npc)
 end)
 
 AddEventHandler('esx:playerDropped', function (playerId)

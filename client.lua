@@ -33,9 +33,13 @@ AddStateBagChangeHandler("ped", nil, function(bagName, key, value)
 
     CreateThread(function()
         local timeout = 0
-        while not DoesEntityExist(npc) do
+        local tries = 0
+        while not DoesEntityExist(npc) and tries < 10 do
             Wait(50)
+            tries += 1
         end
+
+        if not DoesEntityExist(npc) then return end
         while not NetworkHasControlOfEntity(npc) and timeout < 50 do
             Wait(50)
             timeout = timeout + 1
@@ -50,12 +54,6 @@ AddStateBagChangeHandler("ped", nil, function(bagName, key, value)
         end
         local netId = NetworkGetNetworkIdFromEntity(npc)
         TriggerServerEvent("angryped:validateKill", netId)
-
-		Wait(5000)
-
-        if DoesEntityExist(npc) then
-            DeleteEntity(npc)
-        end
     end)
 
 end)
