@@ -33,13 +33,7 @@ AddStateBagChangeHandler("ped", nil, function(bagName, key, value)
 
     CreateThread(function()
         local timeout = 0
-        local tries = 0
-        while not DoesEntityExist(npc) and tries < 10 do
-            Wait(50)
-            tries += 1
-        end
 
-        if not DoesEntityExist(npc) then return end
         while not NetworkHasControlOfEntity(npc) and timeout < 50 do
             Wait(50)
             timeout = timeout + 1
